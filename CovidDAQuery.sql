@@ -138,3 +138,33 @@ WHERE dea.continent is not null
 
 SELECT *
 FROM PercentPopualtionVaccinated
+
+--Tableau Queries
+
+--Looking at total deaths, total cases, and death percentage 
+SELECT SUM(new_cases) AS total_cases, SUM(cast(new_deaths as int)) AS total_deaths, (SUM(cast(new_deaths as int))/SUM(new_cases) * 100) AS death_percentage
+FROM CovidProject..CovidDeaths
+WHERE continent is not null
+ORDER BY 1,2
+
+--Looking at total deaths by continent
+SELECT location, SUM(cast(new_deaths AS int)) AS total_death_count
+FROM CovidProject..CovidDeaths
+WHERE continent is null
+AND location not in ('World', 'European Union', 'International')
+GROUP BY location
+ORDER BY total_death_count DESC
+
+--Looking at countries by infected population
+SELECT Location, Population, MAX(total_cases) AS highest_infection_count, MAX((total_cases/Population)) * 100 AS percent_population_infected
+FROM CovidProject..CovidDeaths
+WHERE continent is not null
+GROUP BY Location, Population
+ORDER BY percent_population_infected DESC
+
+--Looking at countries by infected population over time
+SELECT Location, Population, date, MAX(total_cases) AS highest_infection_count, MAX((total_cases/Population)) * 100 AS percent_population_infected
+FROM CovidProject..CovidDeaths
+WHERE continent is not null
+GROUP BY Location, Population, date
+ORDER BY percent_population_infected DESC
